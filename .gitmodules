@@ -1,0 +1,3 @@
+[submodule "modules/auik"]
+	path = modules/auik
+	url = git@git.dev.lan:app3d/auik
