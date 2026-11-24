@@ -10,35 +10,35 @@
 - layout and data widgets
 
 ## Screenshots
-<a href="./screenshots/demo.png">
-    <img src="./screenshots/demo.png" alt="screenshot" width="350"/>
-</a>
+
+[<img src="./screenshots/demo.png" alt="screenshot" width="350"/>](./screenshots/demo.png)
 
 ## Integration
 
-Add both Auik and the demo module before compiling the final host theme:
+Add Auik and the demo module as sibling directories before compiling the host's ASD theme:
 
 ```cmake
 add_subdirectory(modules/auik)
 add_subdirectory(modules/auik-demo)
 
-compile_auik_css_theme("${AUIK_BASE_THEME}"
+compile_auik_asd_theme("${AUIK_BASE_THEME}"
+    APP_IDS_CSV "${CMAKE_CURRENT_SOURCE_DIR}/src/ui/style_tags_id.csv"
     INPUT_FOLDERS
-        "${AUIK_DEMO_CSS_DIR}"
+        "${AUIK_DEMO_STYLE_DIR}"
         "${CMAKE_CURRENT_SOURCE_DIR}/src/ui"
 )
 
-target_sources(my_app PRIVATE ${AUIK_CSS_SRC})
-target_include_directories(my_app PRIVATE ${AUIK_CSS_INCLUDE_DIR})
+target_sources(my_app PRIVATE ${AUIK_ASD_SRC})
+target_include_directories(my_app PRIVATE ${AUIK_ASD_INCLUDE_DIR})
 target_link_libraries(my_app PRIVATE auik auik-demo)
-add_dependencies(my_app ${AUIK_CSS_TARGET})
+add_dependencies(my_app ${AUIK_ASD_TARGET})
 ```
 
-`AUIK_DEMO_CSS_DIR` contains demo-specific styles and public style ids. Put it before application CSS folders if the application should be able to override demo styles.
+`AUIK_DEMO_STYLE_DIR` contains the demo's `theme.asd` and `style_tags_id.csv`. The module registers its own style IDs when you call `add_subdirectory`. If the host has no styles of its own, omit `APP_IDS_CSV` and keep only `AUIK_DEMO_STYLE_DIR` in `INPUT_FOLDERS`.
 
 ## Runtime Setup
 
-Include the public header:
+Load the generated host theme before creating the demo widgets. Include the public header:
 
 ```cpp
 #include <auik/demo.hpp>
@@ -72,7 +72,6 @@ Attach those widgets to the same root/window tree used by the host application. 
 ## Notes
 
 - The demo window is built from existing Auik widgets only.
-- If the host theme does not include `AUIK_DEMO_CSS_DIR`, demo labels will still render, but demo-specific styling such as bold labels will be missing.
 
 ## License
 This project is licensed under the  [MIT License](LICENSE).

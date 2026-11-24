@@ -16,11 +16,11 @@ endif()
 include("${CMAKE_CURRENT_SOURCE_DIR}/../auik/tools/theme_build.cmake")
 
 create_symbol_export_file()
-set(AUIK_DEMO_CSS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/style")
-set(AUIK_DEMO_THEME "${AUIK_DEMO_CSS_DIR}/theme.css")
+set(AUIK_DEMO_STYLE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/style")
+set(AUIK_DEMO_THEME "${AUIK_DEMO_STYLE_DIR}/theme.asd")
 
 compile_auik_style_ids("${AUIK_DEMO_THEME}"
-    IDS_CSV "${AUIK_DEMO_CSS_DIR}/style_tags_id.csv"
+    IDS_CSV "${AUIK_DEMO_STYLE_DIR}/style_tags_id.csv"
     IDS_HEADER "${CMAKE_CURRENT_BINARY_DIR}/include/auik/demo_style_tags.hpp"
     TARGET_NAME "auik_demo_style_ids"
 )
@@ -54,5 +54,5 @@ set_target_properties(${PROJECT_NAME}
 
 get_directory_property(AUIK_DEMO_HAS_PARENT PARENT_DIRECTORY)
 if(AUIK_DEMO_HAS_PARENT)
-    set(AUIK_DEMO_CSS_DIR "${AUIK_DEMO_CSS_DIR}" PARENT_SCOPE)
+    set(AUIK_DEMO_STYLE_DIR "${AUIK_DEMO_STYLE_DIR}" PARENT_SCOPE)
 endif()

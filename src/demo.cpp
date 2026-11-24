@@ -23,7 +23,6 @@
 #include <auik/widgets/window.hpp>
 
 #define AUIK_DEMO_MAIN_MENU_BAR_ID     0x09A8D50Du
-#define AUIK_DEMO_WINDOW_ID            0x09A8D50E
 #define AUIK_DEMO_BASIC_HEADER_ID      0x09A8D510u
 #define AUIK_DEMO_BASIC_COLUMNS_ID     0x09A8D511u
 #define AUIK_DEMO_SECTION_COLUMNS_ID   0x09A8D512u
@@ -36,7 +35,7 @@
 #define AUIK_DEMO_LAYOUT_HEADER_ID     0x09A8D519u
 #define AUIK_DEMO_LAYOUT_COLUMNS_ID    0x09A8D51Au
 #define AUIK_DEMO_LABEL_WIDTH          145.0f
-#define AUIK_DEMO_ROW_INLINE_SPACING   8.0f
+#define AUIK_DEMO_CONTROLS_COLUMNS_ID  0xE5404971u
 
 namespace auik
 {
@@ -62,7 +61,7 @@ namespace auik
         {
             auto *row = make_block(id);
             row->set_size({270.0f, AUIK_SIZE_Y_FIT});
-            row->add_child(make_text(id ^ AUIK_TAG_TEXT, text),
+            row->add_child(make_text(id ^ AUIK_TAG_TEXT, text, AUIK_SIZE_FIT),
                            make_layout_flags(ChildLayout::block, align, VAlign::center));
             return row;
         }
@@ -78,8 +77,8 @@ namespace auik
         void add_vertical_labeled_control(Block *slot, u32 label_id, StringView label, Widget *control,
                                           HAlign label_align = HAlign::left)
         {
-            const auto label_layout = make_layout_flags(ChildLayout::block, label_align, VAlign::center);
-            const auto control_layout = make_layout_flags(ChildLayout::block, label_align, VAlign::center);
+            const auto label_layout = make_layout_flags(ChildLayout::block, label_align, VAlign::top);
+            const auto control_layout = make_layout_flags(ChildLayout::block, label_align, VAlign::top);
             slot->add_child(make_demo_vertical_label(label_id, label), label_layout);
             slot->add_child(control, control_layout);
         }
@@ -88,7 +87,7 @@ namespace auik
         {
             const auto inline_center = make_layout_flags(ChildLayout::inline_, HAlign::left, VAlign::center);
             const auto center = make_layout_flags(ChildLayout::block, HAlign::left, VAlign::center);
-            auto *label = make_text(text_id, text, AUIK_SIZE_FIT, default_text_layout_flags(), TextAnchorY::middle);
+            auto *label = make_text(text_id, text, AUIK_SIZE_FIT);
             label->set_tight_content_height(true);
             slot->add_child(control, inline_center);
             slot->add_child(label, center);
@@ -121,7 +120,7 @@ namespace auik
             const auto inline_center = make_layout_flags(ChildLayout::inline_, HAlign::left, VAlign::center);
             const auto center = make_layout_flags(ChildLayout::block, HAlign::left, VAlign::center);
             slot->add_child(make_demo_label(0x09A8D533u, "Progress Bar"), inline_center);
-            slot->add_child(make_progress_bar(0x09A8D531u, 0.67f, 0.0f, 1.0f, 270.0f), inline_center);
+            slot->add_child(make_progress_bar(0x09A8D531u, 0.67f, 0.0f, 1.0f, 210.0f), inline_center);
             auto *progress_percent = make_text(0x09A8D532u, "67%", {48.0f, AUIK_SIZE_Y_FIT});
             progress_percent->set_style_tag(AUIK_STYLE_TAG_PROGRESS_PERCENT);
             slot->add_child(progress_percent, center);
@@ -151,10 +150,10 @@ namespace auik
         CollapseHeader *make_basic_widgets_header()
         {
             auto *header = make_collapse_header(AUIK_DEMO_BASIC_HEADER_ID, "Basic Widgets", true);
-            auto *columns = make_column(AUIK_DEMO_BASIC_COLUMNS_ID, 3u, {AUIK_SIZE_X_FILL, AUIK_SIZE_Y_FIT});
+            auto *columns = make_column(AUIK_DEMO_BASIC_COLUMNS_ID, 2u, {AUIK_SIZE_X_FILL, AUIK_SIZE_Y_FIT});
             make_basic_controls_column((*columns)[0u]);
             make_basic_status_column((*columns)[1u]);
-            make_basic_disabled_column((*columns)[2u]);
+            make_basic_disabled_column((*columns)[1u]);
             header->add_child(columns);
             return header;
         }
@@ -189,23 +188,25 @@ namespace auik
             make_selection_switch_column((*columns)[2u]);
             header->add_child(columns);
 
-            add_vertical_labeled_control(
-                header, 0x09A8D56Fu, "Tabbar",
-                make_tabbar(0x09A8D570u, {"General", "Settings", "Advanced", "About"}, TabbarFlagBits::none, {AUIK_SIZE_X_FILL, AUIK_SIZE_Y_FIT}));
+            add_vertical_labeled_control(header, 0x09A8D56Fu, "Tabbar",
+                                         make_tabbar(0x09A8D570u, {"General", "Settings", "Advanced", "About"},
+                                                     TabbarFlagBits::none, {AUIK_SIZE_X_FILL, AUIK_SIZE_Y_FIT}));
             return header;
         }
 
         void add_color_picker_column(Block *slot, u32 label_id, StringView label, Widget *picker)
-        { add_vertical_labeled_control(slot, label_id, label, picker, HAlign::center); }
+        {
+            add_vertical_labeled_control(slot, label_id, label, picker, HAlign::center);
+        }
 
         CollapseHeader *make_color_pickers_header()
         {
             auto *header = make_collapse_header(AUIK_DEMO_COLOR_HEADER_ID, "Color Pickers", true);
             auto *columns = make_column(AUIK_DEMO_COLOR_COLUMNS_ID, 3u, {AUIK_SIZE_X_FILL, AUIK_SIZE_Y_FIT});
             add_color_picker_column((*columns)[0u], 0x09A8D580u, "Circle Color Picker",
-                                    make_circle_color_picker(0x09A8D581u, 140.0f, {1.0f, 0.25f, 0.5f, 1.0f}));
+                                    make_circle_color_picker(0x09A8D581u, {1.0f, 0.25f, 0.5f, 1.0f}, 140.0f));
             add_color_picker_column((*columns)[1u], 0x09A8D582u, "Square Color Picker",
-                                    make_square_color_picker(0x09A8D583u, 140.0f, {0.25f, 0.78f, 1.0f, 1.0f}));
+                                    make_square_color_picker(0x09A8D583u, {0.25f, 0.78f, 1.0f, 1.0f}, 140.0f));
             add_color_picker_column(
                 (*columns)[2u], 0x09A8D584u, "Gradient Picker",
                 make_gradient_color_picker(0x09A8D585u, {0.78f, 0.25f, 1.0f, 1.0f}, {150.0f, 140.0f}));
@@ -266,24 +267,22 @@ namespace auik
         {
             add_labeled_row(slot, 0x09A8D59Eu, "Drag Int",
                             make_drag_int(0x09A8D59Fu, 42, 0, 100, 1.0f, {160.0f, AUIK_SIZE_Y_FIT}));
-            add_labeled_row(
-                slot, 0x09A8D5A0u, "Drag Float",
-                make_drag_float(0x09A8D5A1u, 1.234f, 0.0f, 10.0f, 0.01f, {160.0f, AUIK_SIZE_Y_FIT}));
+            add_labeled_row(slot, 0x09A8D5A0u, "Drag Float",
+                            make_drag_float(0x09A8D5A1u, 1.234f, 0.0f, 10.0f, 0.01f, {160.0f, AUIK_SIZE_Y_FIT}));
         }
 
         CollapseHeader *make_sliders_and_drags_header()
         {
             auto *header = make_collapse_header(AUIK_DEMO_SLIDERS_HEADER_ID, "Sliders and Drags", true);
-            auto *columns = make_column(AUIK_DEMO_SLIDERS_COLUMNS_ID, 3u, {AUIK_SIZE_X_FILL, AUIK_SIZE_Y_FIT});
+            auto *columns = make_column(AUIK_DEMO_SLIDERS_COLUMNS_ID, 2u, {AUIK_SIZE_X_FILL, AUIK_SIZE_Y_FIT});
             make_sliders_column((*columns)[0u]);
             make_hsl_sliders_column((*columns)[1u]);
-            make_drags_column((*columns)[2u]);
+            make_drags_column((*columns)[1u]);
             header->add_child(columns);
             return header;
         }
 
-        Text *make_demo_cell_text(u32 id, StringView text)
-        { return make_text(id, text, AUIK_SIZE_FIT, default_text_layout_flags(), TextAnchorY::middle); }
+        Text *make_demo_cell_text(u32 id, StringView text) { return make_text(id, text, AUIK_SIZE_FIT); }
 
         Table::Cell make_demo_table_cell(u32 id, StringView text)
         {
@@ -306,38 +305,51 @@ namespace auik
                 {make_demo_table_cell(0x09A8D5D8u, "Foxtrot"), make_demo_table_cell(0x09A8D5DBu, "Physics"),
                  make_demo_table_cell(0x09A8D5DCu, "12.00")},
             };
-            auto *table = make_table(0x09A8D5BCu, std::move(rows), {400.0f, AUIK_SIZE_Y_FIT});
-            table->set_header({make_demo_table_cell(0x09A8D5BDu, "Name"),
-                               make_demo_table_cell(0x09A8D5BEu, "Category"),
+            auto *table = make_table(0x09A8D5BCu, std::move(rows), {AUIK_SIZE_X_FILL, AUIK_SIZE_Y_FIT});
+            table->set_header({make_demo_table_cell(0x09A8D5BDu, "Name"), make_demo_table_cell(0x09A8D5BEu, "Category"),
                                make_demo_table_cell(0x09A8D5BFu, "Value")});
-            table->set_alternating_rows(true);
+            for (size_t row = 1; row < table->row_count(); row += 2)
+                for (size_t column = 0; column < table->column_count(); ++column)
+                    table->set_cell_style_tag(row, column, AUIK_STYLE_TAG_DEMO_TABLE_STRIPED_CELL);
             table->set_column_settings({{TableColumnSizing::stretch, 1.3f, 80.0f},
                                         {TableColumnSizing::stretch, 1.0f, 70.0f},
                                         {TableColumnSizing::stretch, 0.8f, 60.0f}});
             return table;
         }
 
+        DrawBlock *make_demo_tree_cell(u32 id, StringView text, bool value_column = false)
+        {
+            auto *cell = make_draw_block(id);
+            auto *label = make_demo_cell_text(AUIK_TAG_TEXT, text);
+            if (value_column) label->set_style_tag(AUIK_STYLE_TAG_DEMO_TREE_VALUE);
+            cell->add_child(label);
+            return cell;
+        }
+
         TableTree *make_demo_tree_table()
         {
-            auto *tree = make_table_tree(0x09A8D5C0u, {400.0f, AUIK_SIZE_Y_FIT});
+            auto *tree = make_table_tree(0x09A8D5C0u, {AUIK_SIZE_X_FILL, AUIK_SIZE_Y_FIT});
+            tree->set_collapse_icon_style_tag(AUIK_STYLE_TAG_DEMO_TREE_COLLAPSE_ICON);
             tree->set_alternating_rows(true);
             tree->set_column_settings(
                 {{TableColumnSizing::stretch, 1.45f, 130.0f}, {TableColumnSizing::stretch, 0.75f, 80.0f}});
 
-            const size_t scene =
-                tree->add_node(make_demo_cell_text(0x09A8D5C1u, "Scene"), {make_demo_cell_text(0x09A8D5E0u, "Folder")});
-            const size_t camera = tree->add_node(make_demo_cell_text(0x09A8D5C2u, "Camera"),
-                                                 {make_demo_cell_text(0x09A8D5E1u, "Folder")}, scene);
-            tree->add_node(make_demo_cell_text(0x09A8D5C3u, "Transform"),
-                           {make_demo_cell_text(0x09A8D5E2u, "Component")}, camera);
-            tree->add_node(make_demo_cell_text(0x09A8D5C4u, "Lens"), {make_demo_cell_text(0x09A8D5E3u, "Component")},
-                           camera);
-            const size_t light = tree->add_node(make_demo_cell_text(0x09A8D5C5u, "Light"),
-                                                {make_demo_cell_text(0x09A8D5E4u, "Folder")}, scene);
-            tree->add_node(make_demo_cell_text(0x09A8D5C6u, "Sun"), {make_demo_cell_text(0x09A8D5E5u, "Light")}, light);
-            tree->add_node(make_demo_cell_text(0x09A8D5C7u, "Fill"), {make_demo_cell_text(0x09A8D5E6u, "Light")},
+            const size_t scene = tree->add_node(make_demo_tree_cell(0x09A8D5C1u, "Scene"),
+                                                {make_demo_tree_cell(0x09A8D5E0u, "Folder", true)});
+            const size_t camera = tree->add_node(make_demo_tree_cell(0x09A8D5C2u, "Camera"),
+                                                 {make_demo_tree_cell(0x09A8D5E1u, "Folder", true)}, scene);
+            tree->add_node(make_demo_tree_cell(0x09A8D5C3u, "Transform"),
+                           {make_demo_tree_cell(0x09A8D5E2u, "Component", true)}, camera);
+            tree->add_node(make_demo_tree_cell(0x09A8D5C4u, "Lens"),
+                           {make_demo_tree_cell(0x09A8D5E3u, "Component", true)}, camera);
+            const size_t light = tree->add_node(make_demo_tree_cell(0x09A8D5C5u, "Light"),
+                                                {make_demo_tree_cell(0x09A8D5E4u, "Folder", true)}, scene);
+            tree->add_node(make_demo_tree_cell(0x09A8D5C6u, "Sun"), {make_demo_tree_cell(0x09A8D5E5u, "Light", true)},
                            light);
-            tree->add_node(make_demo_cell_text(0x09A8D5E7u, "Cube"), {make_demo_cell_text(0x09A8D5E8u, "Mesh")}, scene);
+            tree->add_node(make_demo_tree_cell(0x09A8D5C7u, "Fill"), {make_demo_tree_cell(0x09A8D5E6u, "Light", true)},
+                           light);
+            tree->add_node(make_demo_tree_cell(0x09A8D5E7u, "Cube"), {make_demo_tree_cell(0x09A8D5E8u, "Mesh", true)},
+                           scene);
             return tree;
         }
 
@@ -398,7 +410,7 @@ namespace auik
         }
     } // namespace
 
-    AUIK_DEMO_EXPORT bool configure_demo_icons(Font *font, f32 dpi)
+    bool configure_demo_icons(Font *font, f32 dpi)
     {
         if (!font) return false;
 
@@ -409,8 +421,7 @@ namespace auik
                                                .codepoints = {codepoint},
                                                .ids = {id},
                                                .load_flags = font->load_flags(),
-                                               .render_mode = font->render_mode(),
-                                               .display_size = {20.0f, 20.0f}};
+                                               .render_mode = font->render_mode()};
                 if (load_font_icons(font, &icon)) return true;
             }
             return false;
@@ -420,19 +431,25 @@ namespace auik
                load_icon(AUIK_DEMO_ICON_HEART, {0x2665u, 0x2661u, 0x002Bu});
     }
 
-    AUIK_DEMO_EXPORT MenuBar *make_demo_main_menu_bar()
+    MenuBar *make_demo_main_menu_bar()
     {
-        return auik::make_main_menu_bar(AUIK_DEMO_MAIN_MENU_BAR_ID,
-                                        {"File", "Edit", "View", "Tools", "Window", "Help"});
+        return make_main_menu_bar(AUIK_DEMO_MAIN_MENU_BAR_ID, {"File", "Edit", "View", "Tools", "Window", "Help"});
     }
 
-    AUIK_DEMO_EXPORT Window *make_demo_window()
+    Window *make_demo_window() { return make_demo_window({{14.0f, 84.0f}, {AUIK_SIZE_X_FILL, AUIK_SIZE_Y_FIT}}); }
+
+    Window *make_demo_window(const amal::rect &bounds)
     {
-        auto *demo_window = auik::make_decorated_window(AUIK_DEMO_WINDOW_ID, "Demo Window",
-                                                        {{14.0f, 84.0f}, {AUIK_SIZE_X_FILL, AUIK_SIZE_Y_FIT}});
-        demo_window->add_child(make_basic_widgets_header());
+        constexpr auto flags = WidgetFlagBits::visible | WidgetFlagBits::attachable | WidgetFlagBits::hittable;
+        auto *demo_window =
+            acul::alloc<Window>(AUIK_DEMO_WINDOW_ID, "Demo Window", bounds,
+                                get_fixed_window_flags() | WindowFlagBits::movable | WindowFlagBits::closable, flags);
+        demo_window->set_window_style_tag(AUIK_STYLE_TAG_DEMO_WINDOW);
+        auto *controls = make_column(AUIK_DEMO_CONTROLS_COLUMNS_ID, 2u, {AUIK_SIZE_X_FILL, AUIK_SIZE_Y_FIT});
+        (*controls)[0u]->add_child(make_basic_widgets_header());
+        (*controls)[1u]->add_child(make_sliders_and_drags_header());
+        demo_window->add_child(controls);
         demo_window->add_child(make_selection_and_color_section());
-        demo_window->add_child(make_sliders_and_drags_header());
         demo_window->add_child(make_layout_and_data_header());
         return demo_window;
     }

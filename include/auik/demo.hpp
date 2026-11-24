@@ -7,10 +7,12 @@
 
 #define AUIK_DEMO_ICON_STAR  0x62C9D04Du
 #define AUIK_DEMO_ICON_HEART 0xB4B57F0Du
+#define AUIK_DEMO_WINDOW_ID 0x09A8D50Eu
 
 namespace auik
 {
     AUIK_DEMO_EXPORT bool configure_demo_icons(Font *font, f32 dpi = 1.0f);
     AUIK_DEMO_EXPORT MenuBar *make_demo_main_menu_bar();
     AUIK_DEMO_EXPORT Window *make_demo_window();
+    AUIK_DEMO_EXPORT Window *make_demo_window(const amal::rect &bounds);
 }
